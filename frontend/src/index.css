@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@layer base {
+  :root {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 291 73% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 10% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 291 73% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 10% 18%;
+    --input: 240 10% 18%;
+    --ring: 291 73% 45%;
+
+    --radius: 0.75rem;
+
+    /* Custom colors */
+    --hoops-purple: 291 73% 45%;
+    --hoops-purple-glow: 291 73% 55%;
+    --hoops-blue: 220 80% 50%;
+    --hoops-blue-glow: 220 80% 60%;
+    --grid-color: 240 10% 20%;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 291 73% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 10% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 291 73% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 10% 18%;
+    --input: 240 10% 18%;
+    --ring: 291 73% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  .tech-grid {
+    background-image: 
+      linear-gradient(to right, hsl(var(--grid-color)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--grid-color)) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .purple-blur {
+    background: radial-gradient(ellipse at center, hsl(var(--hoops-purple) / 0.3) 0%, transparent 70%);
+  }
+
+  .blue-blur {
+    background: radial-gradient(ellipse at center bottom, hsl(var(--hoops-blue) / 0.25) 0%, transparent 60%);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 40px hsl(var(--hoops-purple) / 0.4), 0 0 80px hsl(var(--hoops-purple) / 0.2);
+  }
+
+  .text-glow-purple {
+    text-shadow: 0 0 30px hsl(var(--hoops-purple) / 0.6);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(var(--muted-foreground)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@layer components {
+  .floating-nav {
+    @apply bg-secondary/80 backdrop-blur-xl border border-border/50 rounded-full px-2 py-2;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-foreground bg-muted/50;
+  }
+
+  .btn-primary {
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-full px-6 py-3 transition-all duration-200 glow-purple hover:scale-105;
+  }
+
+  .card-tech {
+    @apply bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6;
+  }
+}
+
+/* Loading animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes grid-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 60px 60px;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out forwards;
+}
+
+.animate-grid-move {
+  animation: grid-move 4s linear infinite;
+}
+
+.loading-fade-out {
+  animation: fade-out 0.5s ease-out forwards;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
