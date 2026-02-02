@@ -4,9 +4,9 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
-    "build": "prisma generate && tsc",
-    "start": "node dist/server.js",
-    "dev": "nodemon src/server.ts"
+  "build": "prisma generate && tsc",
+  "start": "node dist/server.js",
+  "dev": "nodemon"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
