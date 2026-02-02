@@ -10,23 +10,31 @@ import checkoutRoutes from "./routes/checkout.js";
 const app = express();
 const prisma = new PrismaClient();
 
-// Middleware
+// ===============================
+// MIDDLEWARE
+// ===============================
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// ===============================
+// ROUTES
+// ===============================
 app.use("/auth", authRoutes);
 app.use("/cart", cartRoutes);
 app.use("/products", productsRoutes);
 app.use("/checkout", checkoutRoutes);
 
-// Test route
-app.get("/", (req: Request, res: Response) => {
+// ===============================
+// HEALTH CHECK / TEST ROUTE
+// ===============================
+app.get("/", (req: Request, res: Response): void => {
   res.send("Backend running...");
 });
 
-// Render-safe port
-const PORT = process.env.PORT || 4000;
+// ===============================
+// SERVER START (RENDER SAFE)
+// ===============================
+const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

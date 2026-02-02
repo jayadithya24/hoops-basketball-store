@@ -10,22 +10,31 @@ interface AuthTokenPayload {
   sub?: number | string;
 }
 
+/**
+ * Extend Express Request locally
+ */
+interface AuthRequest extends Request {
+  userId?: number;
+}
+
 export const authMiddleware = (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
-) => {
+): void => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "No token provided" });
+    res.status(401).json({ error: "No token provided" });
+    return;
   }
 
   const token = authHeader.split(" ")[1];
   const jwtSecret = process.env.JWT_SECRET;
 
   if (!jwtSecret) {
-    return res.status(500).json({ error: "Server configuration error" });
+    res.status(500).json({ error: "Server configuration error" });
+    return;
   }
 
   try {
@@ -37,14 +46,15 @@ export const authMiddleware = (
       (typeof decoded.sub === "string" ? Number(decoded.sub) : decoded.sub);
 
     if (!rawUserId || Number.isNaN(rawUserId)) {
-      return res.status(401).json({ error: "Invalid token payload" });
+      res.status(401).json({ error: "Invalid token payload" });
+      return;
     }
 
-    // ✅ now valid because of express.d.ts
+    // ✅ SAFE & TYPED
     req.userId = rawUserId;
 
     next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    res.status(401).json({ error: "Invalid or expired token" });
   }
 };
