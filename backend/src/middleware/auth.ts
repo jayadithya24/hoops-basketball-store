@@ -11,9 +11,9 @@ interface AuthTokenPayload {
 }
 
 /**
- * Extend Express Request locally
+ * Extend Express Request safely
  */
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   userId?: number;
 }
 
@@ -50,11 +50,9 @@ export const authMiddleware = (
       return;
     }
 
-    // ✅ SAFE & TYPED
-    req.userId = rawUserId;
-
+    req.userId = Number(rawUserId);
     next();
-  } catch (err) {
+  } catch {
     res.status(401).json({ error: "Invalid or expired token" });
   }
 };
