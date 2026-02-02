@@ -2,9 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon"
+    "build": "prisma generate && tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon src/server.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
@@ -27,8 +29,6 @@
     "typescript": "^5.9.3"
   },
   "prisma": {
-  "seed": "node prisma/seed.cjs"
-}
-
-
+    "seed": "node prisma/seed.cjs"
+  }
 }

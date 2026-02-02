@@ -2,10 +2,11 @@ import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 
-import authRoutes from "./routes/authRoutes.ts";
-import cartRoutes from "./routes/cart.ts";
-import productsRoutes from "./routes/products.ts";
-import checkoutRoutes from "./routes/checkout.ts";
+import authRoutes from "./routes/authRoutes.js";
+import cartRoutes from "./routes/cart.js";
+import productsRoutes from "./routes/products.js";
+import checkoutRoutes from "./routes/checkout.js";
+
 
 
 const app = express();
