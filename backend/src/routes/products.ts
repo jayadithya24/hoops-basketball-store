@@ -5,14 +5,19 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // Get ALL products
-router.get("/", async (req: Request, res: Response): Promise<void> => {
+router.get("/", async (req, res) => {
   try {
     const products = await prisma.product.findMany();
-    res.status(200).json(products);
+    res.json(products);
   } catch (error) {
-    console.error("Error fetching products:", error);
-    res.status(500).json({ message: "Failed to fetch products" });
+    console.error("❌ PRODUCTS ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch products",
+      error: String(error),
+    });
   }
 });
+
 
 export default router;
