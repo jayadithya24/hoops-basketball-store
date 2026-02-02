@@ -6,81 +6,100 @@ import jwt from "jsonwebtoken";
 const router = Router();
 const prisma = new PrismaClient();
 
-const jwtSecret = process.env.JWT_SECRET as string;
+// 🚨 Ensure JWT secret exists (VERY IMPORTANT for Render)
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  throw new Error("JWT_SECRET is not defined in environment variables");
+}
 
-// Signup
-router.post("/signup", async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
+// ===============================
+// SIGNUP
+// ===============================
+router.post(
+  "/signup",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+      if (!email || !password) {
+        res.status(400).json({ error: "Email and password are required" });
+        return;
+      }
+
+      const exists = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (exists) {
+        res.status(400).json({ error: "Email already exists" });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+        },
+      });
+
+      res.status(201).json({
+        message: "Signup successful",
+        userId: user.id,
+      });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    const exists = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (exists) {
-      return res.status(400).json({ error: "Email already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
-    });
-
-    res.status(201).json({
-      message: "Signup successful",
-      userId: user.id,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
   }
-});
+);
 
-// Login
-router.post("/login", async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
+// ===============================
+// LOGIN
+// ===============================
+router.post(
+  "/login",
+  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+      if (!email || !password) {
+        res.status(400).json({ error: "Email and password are required" });
+        return;
+      }
+
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!user) {
+        res.status(400).json({ error: "User not found" });
+        return;
+      }
+
+      const validPassword = await bcrypt.compare(password, user.password);
+
+      if (!validPassword) {
+        res.status(400).json({ error: "Wrong password" });
+        return;
+      }
+
+      const token = jwt.sign(
+        { userId: user.id },
+        jwtSecret,
+        { expiresIn: "7d" }
+      );
+
+      res.json({
+        message: "Login successful",
+        token,
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!user) {
-      return res.status(400).json({ error: "User not found" });
-    }
-
-    const validPassword = await bcrypt.compare(password, user.password);
-
-    if (!validPassword) {
-      return res.status(400).json({ error: "Wrong password" });
-    }
-
-    const token = jwt.sign(
-      { userId: user.id },
-      jwtSecret,
-      { expiresIn: "7d" }
-    );
-
-    res.json({
-      message: "Login successful",
-      token,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal server error" });
   }
-});
+);
 
 export default router;

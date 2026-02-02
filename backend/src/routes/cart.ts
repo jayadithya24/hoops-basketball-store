@@ -7,16 +7,29 @@ console.log("CART ROUTES LOADED!!!");
 const router = Router();
 const prisma = new PrismaClient();
 
+/**
+ * Extend Express Request to include userId
+ */
+interface AuthRequest extends Request {
+  userId?: number;
+}
+
 // ===============================
 // GET CART ITEMS
 // ===============================
 router.get(
   "/",
   authMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
+  async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
       const items = await prisma.cartItem.findMany({
-        where: { userId: req.userId },
+        where: { userId },
         include: { product: true },
       });
 
@@ -34,12 +47,18 @@ router.get(
 router.post(
   "/add/:productId",
   authMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    const productId = Number(req.params.productId);
-
+  async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
+
+      const productId = Number(req.params.productId);
+
       const existing = await prisma.cartItem.findFirst({
-        where: { userId: req.userId, productId },
+        where: { userId, productId },
       });
 
       if (existing) {
@@ -53,7 +72,7 @@ router.post(
 
       const newItem = await prisma.cartItem.create({
         data: {
-          userId: req.userId!,
+          userId,
           productId,
           quantity: 1,
         },
@@ -68,15 +87,15 @@ router.post(
 );
 
 // ===============================
-// INCREASE QUANTITY (BY CART ITEM ID)
+// INCREASE QUANTITY
 // ===============================
 router.post(
   "/increase/:id",
   authMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    const id = Number(req.params.id);
-
+  async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const id = Number(req.params.id);
+
       const updated = await prisma.cartItem.update({
         where: { id },
         data: { quantity: { increment: 1 } },
@@ -91,15 +110,15 @@ router.post(
 );
 
 // ===============================
-// DECREASE QUANTITY (BY CART ITEM ID)
+// DECREASE QUANTITY
 // ===============================
 router.post(
   "/decrease/:id",
   authMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    const id = Number(req.params.id);
-
+  async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const id = Number(req.params.id);
+
       const item = await prisma.cartItem.findUnique({ where: { id } });
 
       if (!item) {
@@ -127,15 +146,14 @@ router.post(
 );
 
 // ===============================
-// REMOVE ITEM (BY CART ITEM ID)
+// REMOVE ITEM
 // ===============================
 router.delete(
   "/:id",
   authMiddleware,
-  async (req: Request, res: Response): Promise<void> => {
-    const id = Number(req.params.id);
-
+  async (req: AuthRequest, res: Response): Promise<void> => {
     try {
+      const id = Number(req.params.id);
       await prisma.cartItem.delete({ where: { id } });
       res.json({ message: "Item removed" });
     } catch (err) {

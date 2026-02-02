@@ -1,73 +1,88 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { PrismaClient } from "@prisma/client";
 import { authMiddleware } from "../middleware/auth.js";
 
 const router = Router();
 const prisma = new PrismaClient();
 
+/**
+ * Extend Express Request to include userId
+ */
+interface AuthRequest extends Request {
+  userId?: number;
+}
+
 // POST /checkout
-router.post("/", authMiddleware, async (req: any, res) => {
-  try {
-    // 🔥 DEBUG: Check if token decoded correctly
-    console.log("CHECKOUT called. req.userId =", req.userId);
+router.post(
+  "/",
+  authMiddleware,
+  async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      // 🔥 DEBUG
+      console.log("CHECKOUT called. req.userId =", req.userId);
 
-    const { address, paymentMethod } = req.body;
+      const { address, paymentMethod } = req.body;
 
-    if (!address || !paymentMethod) {
-      return res.status(400).json({ error: "Address & payment method required" });
-    }
+      if (!address || !paymentMethod) {
+        res.status(400).json({ error: "Address & payment method required" });
+        return;
+      }
 
-    // Ensure we have a valid logged-in user ID
-    const userId = req.userId;
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+      // Ensure logged-in user
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
 
-    // Fetch user's cart
-    const cartItems = await prisma.cartItem.findMany({
-      where: { userId },
-      include: { product: true },
-    });
+      // Fetch user's cart
+      const cartItems = await prisma.cartItem.findMany({
+        where: { userId },
+        include: { product: true },
+      });
 
-    if (cartItems.length === 0) {
-      return res.status(400).json({ error: "Cart is empty" });
-    }
+      if (cartItems.length === 0) {
+        res.status(400).json({ error: "Cart is empty" });
+        return;
+      }
 
-    // Calculate total
-    const totalAmount = cartItems.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
-      0
-    );
+      // Calculate total
+      const totalAmount = cartItems.reduce(
+        (sum, item) => sum + item.product.price * item.quantity,
+        0
+      );
 
-    // Create order + items
-    const order = await prisma.order.create({
-      data: {
-        userId,
-        address,
-        paymentMethod,
-        totalAmount,
-        items: {
-          create: cartItems.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-          })),
+      // Create order + order items
+      const order = await prisma.order.create({
+        data: {
+          userId,
+          address,
+          paymentMethod,
+          totalAmount,
+          items: {
+            create: cartItems.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+            })),
+          },
         },
-      },
-      include: { items: true },
-    });
+        include: { items: true },
+      });
 
-    // Clear cart
-    await prisma.cartItem.deleteMany({ where: { userId } });
+      // Clear cart
+      await prisma.cartItem.deleteMany({
+        where: { userId },
+      });
 
-    return res.json({
-      message: "Order placed successfully",
-      order,
-    });
-
-  } catch (error) {
-    console.error("Checkout error:", error);
-    return res.status(500).json({ error: "Checkout failed" });
+      res.status(201).json({
+        message: "Order placed successfully",
+        order,
+      });
+    } catch (error) {
+      console.error("Checkout error:", error);
+      res.status(500).json({ error: "Checkout failed" });
+    }
   }
-});
+);
 
 export default router;
