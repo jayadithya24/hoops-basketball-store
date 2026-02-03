@@ -16,8 +16,8 @@ const prisma = new PrismaClient();
 app.use(
   cors({
     origin: [
-      "http://localhost:8080",
-      "https://hoops-basketball-store-7.onrender.com",
+      "http://localhost:8080", // local frontend
+      "https://hoops-basketball-store.netlify.app", // Netlify frontend
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
