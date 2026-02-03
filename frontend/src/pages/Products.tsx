@@ -77,15 +77,9 @@ const Products = () => {
   };
 
   // =========================
-  // FILTER + KEEP ONLY 12 VALID PRODUCTS
+  // SHOW LAST 12 PRODUCTS (NO OVER-FILTERING)
   // =========================
-  const visibleProducts = products
-    .filter(
-      (product) =>
-        product.image &&
-        product.image.startsWith("https://images.unsplash.com")
-    )
-    .slice(-12);
+  const visibleProducts = products.slice(-12);
 
   return (
     <Layout>
@@ -122,6 +116,10 @@ const Products = () => {
                     <img
                       src={product.image}
                       alt={product.name}
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "https://cdn.jsdelivr.net/gh/ismail9k/placeholders/basketball-placeholder.png";
+                      }}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
