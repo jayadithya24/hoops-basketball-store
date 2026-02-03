@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { API_URL } from "../config/api";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,7 +26,8 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:4000/auth/login", {
+      const res = await axios.post(`${API_URL}/auth/login`, {
+
         email,
         password,
       });

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { API_URL } from "../config/api";
+
 
 interface CartItem {
   id: number;
@@ -14,7 +16,6 @@ interface CartItem {
   };
 }
 
-const API_URL = "http://localhost:4000";
 
 const Cart = () => {
   const navigate = useNavigate();

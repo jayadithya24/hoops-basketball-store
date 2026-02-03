@@ -3,6 +3,8 @@ import Layout from "@/components/Layout";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { API_URL } from "../config/api";
+
 
 interface CartItem {
   id: number;
@@ -36,7 +38,8 @@ const Checkout = () => {
   useEffect(() => {
     if (!token) return;
 
-    fetch("http://localhost:4000/cart", {
+    fetch(`${API_URL}/cart`, {
+
       headers: { Authorization: "Bearer " + token },
     })
       .then((res) => res.json())
@@ -65,7 +68,8 @@ const Checkout = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/checkout", {
+      const res = await fetch(`${API_URL}/checkout`, {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",

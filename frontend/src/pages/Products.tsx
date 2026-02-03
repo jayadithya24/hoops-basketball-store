@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "@/components/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { API_URL } from "../config/api";
 
 interface Product {
   id: number;
@@ -14,25 +15,38 @@ interface Product {
 
 const Products = () => {
   const { token } = useAuth();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingId, setAddingId] = useState<number | null>(null);
 
-  // Fetch products from backend
+  // =========================
+  // Fetch products
+  // =========================
   useEffect(() => {
-    fetch("http://localhost:4000/products")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${API_URL}/products`);
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch products");
+        }
+
+        const data = await res.json();
         setProducts(data);
-        setLoading(false);
-      })
-      .catch(() => {
+      } catch (error) {
         toast.error("Failed to load products");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  // Add to Cart function (FINAL FIXED VERSION)
+  // =========================
+  // Add to cart
+  // =========================
   const addToCart = async (productId: number) => {
     if (!token) {
       toast.error("Please login to add items to cart");
@@ -42,25 +56,36 @@ const Products = () => {
     setAddingId(productId);
 
     try {
-      const res = await fetch(`http://localhost:4000/cart/add/${productId}`, {
+      const res = await fetch(`${API_URL}/cart/add/${productId}`, {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
         },
       });
 
-      if (res.ok) {
-        toast.success("Added to cart!");
-      } else {
-        const error = await res.json();
-        toast.error(error.error || "Failed to add to cart");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to add to cart");
       }
-    } catch (err) {
-      toast.error("Something went wrong");
-    }
 
-    setAddingId(null);
+      toast.success("Added to cart!");
+    } catch (error: any) {
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setAddingId(null);
+    }
   };
+
+  // =========================
+  // FILTER + KEEP ONLY 12 VALID PRODUCTS
+  // =========================
+  const visibleProducts = products
+    .filter(
+      (product) =>
+        product.image &&
+        product.image.startsWith("https://images.unsplash.com")
+    )
+    .slice(-12);
 
   return (
     <Layout>
@@ -87,7 +112,7 @@ const Products = () => {
             <p className="text-muted-foreground text-center">Loading...</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product) => (
+              {visibleProducts.map((product) => (
                 <div
                   key={product.id}
                   className="card-tech group hover:border-primary/50 transition-all duration-300 overflow-hidden"
@@ -97,13 +122,8 @@ const Products = () => {
                     <img
                       src={product.image}
                       alt={product.name}
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "https://cdn.jsdelivr.net/gh/ismail9k/placeholders/basketball-placeholder.png";
-                      }}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 relative z-20"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 z-0"></div>
                   </div>
 
                   {/* Category */}
@@ -128,7 +148,7 @@ const Products = () => {
                     </span>
 
                     <button
-                      className="btn-primary text-sm py-2 px-4"
+                      className="btn-primary text-sm py-2 px-4 disabled:opacity-50"
                       onClick={() => addToCart(product.id)}
                       disabled={addingId === product.id}
                     >
