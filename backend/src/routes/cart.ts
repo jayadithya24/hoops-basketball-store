@@ -1,18 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { authMiddleware } from "../middleware/auth.js";
-
-console.log("CART ROUTES LOADED!!!");
+import { authMiddleware, AuthRequest } from "../middleware/auth.js";
 
 const router = Router();
 const prisma = new PrismaClient();
-
-/**
- * Extend Express Request to include userId
- */
-interface AuthRequest extends Request {
-  userId?: number;
-}
 
 // ===============================
 // GET CART ITEMS
@@ -23,6 +14,7 @@ router.get(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.userId;
+
       if (!userId) {
         res.status(401).json({ error: "Unauthorized" });
         return;
@@ -50,12 +42,12 @@ router.post(
   async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.userId;
-      if (!userId) {
-        res.status(401).json({ error: "Unauthorized" });
+      const productId = Number(req.params.productId);
+
+      if (!userId || !productId) {
+        res.status(400).json({ error: "Invalid request" });
         return;
       }
-
-      const productId = Number(req.params.productId);
 
       const existing = await prisma.cartItem.findFirst({
         where: { userId, productId },
@@ -66,6 +58,7 @@ router.post(
           where: { id: existing.id },
           data: { quantity: { increment: 1 } },
         });
+
         res.json(updated);
         return;
       }

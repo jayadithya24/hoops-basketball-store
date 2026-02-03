@@ -13,7 +13,18 @@ const prisma = new PrismaClient();
 // ===============================
 // MIDDLEWARE
 // ===============================
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:8080",
+      "https://hoops-basketball-store-7.onrender.com",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // ===============================
@@ -25,14 +36,14 @@ app.use("/products", productsRoutes);
 app.use("/checkout", checkoutRoutes);
 
 // ===============================
-// HEALTH CHECK / TEST ROUTE
+// HEALTH CHECK
 // ===============================
 app.get("/", (req: Request, res: Response): void => {
   res.send("Backend running...");
 });
 
 // ===============================
-// SERVER START (RENDER SAFE)
+// SERVER START
 // ===============================
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
 
