@@ -30,9 +30,7 @@ const Cart = () => {
 
     try {
       const res = await fetch(`${API_URL}/cart`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) {
@@ -57,7 +55,6 @@ const Cart = () => {
   // CART ACTIONS
   // ===============================
   const increaseQty = async (id: number) => {
-    if (!token) return;
     await fetch(`${API_URL}/cart/increase/${id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -66,7 +63,6 @@ const Cart = () => {
   };
 
   const decreaseQty = async (id: number) => {
-    if (!token) return;
     await fetch(`${API_URL}/cart/decrease/${id}`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -75,7 +71,6 @@ const Cart = () => {
   };
 
   const removeItem = async (id: number) => {
-    if (!token) return;
     await fetch(`${API_URL}/cart/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
@@ -90,7 +85,7 @@ const Cart = () => {
 
   return (
     <Layout>
-      <div className="pt-40 px-4 sm:px-6 max-w-5xl mx-auto">
+      <div className="pt-36 px-4 sm:px-6 max-w-5xl mx-auto">
         <h1 className="text-4xl sm:text-5xl font-bold mb-10 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
           Your Cart
         </h1>
@@ -137,8 +132,7 @@ const Cart = () => {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => decreaseQty(item.id)}
-                    className="w-10 h-10 rounded-xl bg-white/10 text-2xl
-                    text-purple-300 hover:bg-white/20 transition"
+                    className="w-10 h-10 rounded-xl bg-white/10 text-2xl text-purple-300 hover:bg-white/20"
                   >
                     −
                   </button>
@@ -149,8 +143,7 @@ const Cart = () => {
 
                   <button
                     onClick={() => increaseQty(item.id)}
-                    className="w-10 h-10 rounded-xl bg-white/10 text-2xl
-                    text-purple-300 hover:bg-white/20 transition"
+                    className="w-10 h-10 rounded-xl bg-white/10 text-2xl text-purple-300 hover:bg-white/20"
                   >
                     +
                   </button>
@@ -163,7 +156,7 @@ const Cart = () => {
                     w-full sm:w-auto
                     px-6 py-2 rounded-xl
                     bg-gradient-to-r from-pink-500 to-purple-600
-                    text-white text-center
+                    text-white
                   "
                 >
                   Remove
@@ -178,15 +171,12 @@ const Cart = () => {
           <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-white/5 border border-white/10">
             <div className="flex justify-between text-2xl sm:text-3xl text-white mb-6">
               <span>Total:</span>
-              <span className="text-purple-300">
-                ${total.toFixed(2)}
-              </span>
+              <span className="text-purple-300">${total.toFixed(2)}</span>
             </div>
 
             <button
               onClick={() => navigate("/checkout")}
-              className="w-full py-4 rounded-xl text-lg sm:text-xl
-              bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+              className="w-full py-4 rounded-xl text-lg sm:text-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white"
             >
               Checkout
             </button>
