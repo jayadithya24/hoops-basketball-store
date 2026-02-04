@@ -93,20 +93,20 @@ const Checkout = () => {
 
   return (
     <Layout>
-      <div className="pt-32 pb-20 px-4 sm:px-6 max-w-7xl mx-auto">
-        <h1 className="text-4xl sm:text-6xl font-extrabold text-center text-white mb-12">
+      <div className="pt-28 sm:pt-32 pb-20 px-4 sm:px-6 max-w-7xl mx-auto">
+        <h1 className="text-4xl sm:text-6xl font-extrabold text-center text-white mb-10 sm:mb-12">
           Checkout
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
 
           {/* LEFT FORM */}
-          <div className="p-6 sm:p-10 rounded-3xl bg-white/5 border border-white/20 backdrop-blur-2xl">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-6">
+          <div className="p-5 sm:p-10 rounded-3xl bg-white/5 border border-white/20 backdrop-blur-2xl">
+            <h2 className="text-xl sm:text-3xl font-semibold text-white mb-6">
               Customer Details
             </h2>
 
-            <div className="space-y-5">
+            <div className="space-y-4 sm:space-y-5">
 
               {/* Name + Email */}
               <div className="flex flex-col sm:flex-row gap-4">
@@ -114,13 +114,13 @@ const Checkout = () => {
                   name="fullName"
                   placeholder="Full Name"
                   onChange={handleChange}
-                  className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                  className="flex-1 min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none"
                 />
                 <input
                   name="email"
                   placeholder="Email Address"
                   onChange={handleChange}
-                  className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                  className="flex-1 min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none"
                 />
               </div>
 
@@ -129,7 +129,7 @@ const Checkout = () => {
                 name="address"
                 placeholder="Full Address"
                 onChange={handleChange}
-                className="w-full p-4 h-28 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                className="w-full min-h-[96px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none leading-relaxed"
               />
 
               {/* Phone */}
@@ -137,7 +137,7 @@ const Checkout = () => {
                 name="phone"
                 placeholder="Phone Number"
                 onChange={handleChange}
-                className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                className="w-full min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none"
               />
 
               {/* City + State */}
@@ -146,13 +146,13 @@ const Checkout = () => {
                   name="city"
                   placeholder="City"
                   onChange={handleChange}
-                  className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                  className="flex-1 min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none"
                 />
                 <input
                   name="state"
                   placeholder="State"
                   onChange={handleChange}
-                  className="flex-1 p-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                  className="flex-1 min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none"
                 />
               </div>
 
@@ -161,14 +161,14 @@ const Checkout = () => {
                 name="postalCode"
                 placeholder="Postal Code"
                 onChange={handleChange}
-                className="w-full p-4 rounded-xl bg-white/10 border border-white/20 text-white outline-none"
+                className="w-full min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/10 border border-white/20 text-white text-sm sm:text-base outline-none"
               />
 
               {/* Payment */}
               <select
                 name="payment"
                 onChange={handleChange}
-                className="w-full p-4 rounded-xl bg-white/20 border border-white/20 text-white outline-none"
+                className="w-full min-h-[44px] p-3 sm:p-4 rounded-xl bg-white/20 border border-white/20 text-white text-sm sm:text-base outline-none"
               >
                 <option value="card" className="text-black">Card</option>
                 <option value="cod" className="text-black">Cash on Delivery</option>
@@ -185,15 +185,15 @@ const Checkout = () => {
           </div>
 
           {/* RIGHT SUMMARY */}
-          <div className="p-6 sm:p-10 rounded-3xl bg-white/5 border border-white/20 backdrop-blur-2xl">
-            <h2 className="text-2xl sm:text-3xl font-semibold text-white mb-6">
+          <div className="p-5 sm:p-10 rounded-3xl bg-white/5 border border-white/20 backdrop-blur-2xl">
+            <h2 className="text-xl sm:text-3xl font-semibold text-white mb-6">
               Order Summary
             </h2>
 
             {loading ? (
               <p className="text-gray-400">Loading…</p>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-4 text-sm sm:text-base">
                 {items.map((item) => (
                   <div key={item.id} className="flex justify-between text-white">
                     <span>{item.product.name} × {item.quantity}</span>
@@ -203,7 +203,7 @@ const Checkout = () => {
 
                 <hr className="border-white/20 my-6" />
 
-                <div className="flex justify-between text-2xl font-bold text-white">
+                <div className="flex justify-between text-xl sm:text-2xl font-bold text-white">
                   <span>Total:</span>
                   <span className="text-purple-400">${total}</span>
                 </div>
