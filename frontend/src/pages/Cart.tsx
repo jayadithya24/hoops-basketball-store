@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_URL } from "../config/api";
 
-
 interface CartItem {
   id: number;
   quantity: number;
@@ -15,7 +14,6 @@ interface CartItem {
     image: string;
   };
 }
-
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -56,51 +54,33 @@ const Cart = () => {
   }, [token]);
 
   // ===============================
-  // INCREASE QUANTITY
+  // CART ACTIONS
   // ===============================
-  const increaseQty = async (cartItemId: number) => {
+  const increaseQty = async (id: number) => {
     if (!token) return;
-
-    await fetch(`${API_URL}/cart/increase/${cartItemId}`, {
+    await fetch(`${API_URL}/cart/increase/${id}`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    loadCart(); // 🔥 refresh cart
+    loadCart();
   };
 
-  // ===============================
-  // DECREASE QUANTITY
-  // ===============================
-  const decreaseQty = async (cartItemId: number) => {
+  const decreaseQty = async (id: number) => {
     if (!token) return;
-
-    await fetch(`${API_URL}/cart/decrease/${cartItemId}`, {
+    await fetch(`${API_URL}/cart/decrease/${id}`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    loadCart(); // 🔥 refresh cart
+    loadCart();
   };
 
-  // ===============================
-  // REMOVE ITEM
-  // ===============================
-  const removeItem = async (cartItemId: number) => {
+  const removeItem = async (id: number) => {
     if (!token) return;
-
-    await fetch(`${API_URL}/cart/${cartItemId}`, {
+    await fetch(`${API_URL}/cart/${id}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    loadCart(); // 🔥 refresh cart
+    loadCart();
   };
 
   const total = items.reduce(
@@ -110,8 +90,8 @@ const Cart = () => {
 
   return (
     <Layout>
-      <div className="pt-40 px-6 max-w-5xl mx-auto">
-        <h1 className="text-5xl font-bold mb-10 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+      <div className="pt-40 px-4 sm:px-6 max-w-5xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-10 text-center bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
           Your Cart
         </h1>
 
@@ -125,18 +105,24 @@ const Cart = () => {
           items.map((item) => (
             <div
               key={item.id}
-              className="mb-5 p-6 rounded-2xl bg-white/5 border border-white/10
-              backdrop-blur-xl flex items-center justify-between"
+              className="
+                mb-6 p-5 rounded-2xl bg-white/5 border border-white/10
+                backdrop-blur-xl
+                flex flex-col md:flex-row
+                gap-5 md:gap-0
+                md:items-center md:justify-between
+              "
             >
               {/* Product Info */}
-              <div className="flex items-center gap-5">
+              <div className="flex items-center gap-4">
                 <img
                   src={item.product.image}
                   alt={item.product.name}
-                  className="w-24 h-24 rounded-xl object-cover"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover"
                 />
+
                 <div>
-                  <h2 className="text-2xl font-semibold text-white">
+                  <h2 className="text-xl sm:text-2xl font-semibold text-white">
                     {item.product.name}
                   </h2>
                   <p className="text-purple-300">
@@ -146,31 +132,39 @@ const Cart = () => {
               </div>
 
               {/* Controls */}
-              <div className="flex items-center gap-5">
-                <button
-                  onClick={() => decreaseQty(item.id)}
-                  className="w-10 h-10 rounded-xl bg-white/10 text-2xl
-                  text-purple-300 hover:bg-white/20 transition"
-                >
-                  −
-                </button>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-5">
+                {/* Quantity */}
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => decreaseQty(item.id)}
+                    className="w-10 h-10 rounded-xl bg-white/10 text-2xl
+                    text-purple-300 hover:bg-white/20 transition"
+                  >
+                    −
+                  </button>
 
-                <span className="text-2xl font-semibold text-white">
-                  {item.quantity}
-                </span>
+                  <span className="text-xl font-semibold text-white">
+                    {item.quantity}
+                  </span>
 
-                <button
-                  onClick={() => increaseQty(item.id)}
-                  className="w-10 h-10 rounded-xl bg-white/10 text-2xl
-                  text-purple-300 hover:bg-white/20 transition"
-                >
-                  +
-                </button>
+                  <button
+                    onClick={() => increaseQty(item.id)}
+                    className="w-10 h-10 rounded-xl bg-white/10 text-2xl
+                    text-purple-300 hover:bg-white/20 transition"
+                  >
+                    +
+                  </button>
+                </div>
 
+                {/* Remove */}
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="px-6 py-2 rounded-xl bg-gradient-to-r
-                  from-pink-500 to-purple-600 text-white"
+                  className="
+                    w-full sm:w-auto
+                    px-6 py-2 rounded-xl
+                    bg-gradient-to-r from-pink-500 to-purple-600
+                    text-white text-center
+                  "
                 >
                   Remove
                 </button>
@@ -181,8 +175,8 @@ const Cart = () => {
 
         {/* Total */}
         {items.length > 0 && (
-          <div className="mt-10 p-8 rounded-2xl bg-white/5 border border-white/10">
-            <div className="flex justify-between text-3xl text-white mb-6">
+          <div className="mt-10 p-6 sm:p-8 rounded-2xl bg-white/5 border border-white/10">
+            <div className="flex justify-between text-2xl sm:text-3xl text-white mb-6">
               <span>Total:</span>
               <span className="text-purple-300">
                 ${total.toFixed(2)}
@@ -191,7 +185,7 @@ const Cart = () => {
 
             <button
               onClick={() => navigate("/checkout")}
-              className="w-full py-4 rounded-xl text-xl
+              className="w-full py-4 rounded-xl text-lg sm:text-xl
               bg-gradient-to-r from-purple-500 to-pink-500 text-white"
             >
               Checkout
