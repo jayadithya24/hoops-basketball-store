@@ -13,6 +13,28 @@ interface Product {
   image: string;
 }
 
+/* =========================
+   Skeleton Card Component
+========================= */
+const ProductSkeleton = () => {
+  return (
+    <div className="card-tech animate-pulse">
+      <div className="aspect-square rounded-xl mb-4 bg-white/10" />
+
+      <div className="h-3 w-20 bg-white/10 rounded mb-2" />
+      <div className="h-6 w-3/4 bg-white/10 rounded mb-2" />
+
+      <div className="h-4 w-full bg-white/10 rounded mb-1" />
+      <div className="h-4 w-5/6 bg-white/10 rounded mb-4" />
+
+      <div className="flex justify-between items-center">
+        <div className="h-6 w-16 bg-white/10 rounded" />
+        <div className="h-10 w-28 bg-white/10 rounded-xl" />
+      </div>
+    </div>
+  );
+};
+
 const Products = () => {
   const { token } = useAuth();
 
@@ -20,9 +42,9 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [addingId, setAddingId] = useState<number | null>(null);
 
-  // =========================
-  // Fetch products
-  // =========================
+  /* =========================
+     Fetch products
+  ========================= */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -44,9 +66,9 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  // =========================
-  // Add to cart
-  // =========================
+  /* =========================
+     Add to cart
+  ========================= */
   const addToCart = async (productId: number) => {
     if (!token) {
       toast.error("Please login to add items to cart");
@@ -76,9 +98,9 @@ const Products = () => {
     }
   };
 
-  // =========================
-  // SHOW LAST 12 PRODUCTS (NO OVER-FILTERING)
-  // =========================
+  /* =========================
+     Show last 12 products
+  ========================= */
   const visibleProducts = products.slice(-12);
 
   return (
@@ -102,17 +124,20 @@ const Products = () => {
         <div className="absolute inset-0 purple-blur opacity-30" />
 
         <div className="relative z-10 container mx-auto max-w-6xl">
-          {loading ? (
-            <p className="text-muted-foreground text-center">Loading...</p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleProducts.map((product) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {/* Skeleton Loader */}
+            {loading &&
+              [...Array(6)].map((_, i) => <ProductSkeleton key={i} />)}
+
+            {/* Real Products */}
+            {!loading &&
+              visibleProducts.map((product) => (
                 <div
                   key={product.id}
                   className="card-tech group hover:border-primary/50 transition-all duration-300 overflow-hidden"
                 >
-                  {/* Image */}
-                  <div className="aspect-square rounded-xl mb-4 overflow-hidden bg-black/20 relative">
+                  <div className="aspect-square rounded-xl mb-4 overflow-hidden bg-black/20">
                     <img
                       src={product.image}
                       alt={product.name}
@@ -124,22 +149,18 @@ const Products = () => {
                     />
                   </div>
 
-                  {/* Category */}
                   <span className="text-xs font-medium text-primary uppercase tracking-wider">
                     {product.category}
                   </span>
 
-                  {/* Name */}
                   <h3 className="text-xl font-semibold text-foreground mt-1 mb-2">
                     {product.name}
                   </h3>
 
-                  {/* Description */}
                   <p className="text-muted-foreground text-sm mb-4">
                     {product.description}
                   </p>
 
-                  {/* Price + Button */}
                   <div className="flex items-center justify-between">
                     <span className="text-2xl font-bold text-primary">
                       ${product.price}
@@ -155,8 +176,7 @@ const Products = () => {
                   </div>
                 </div>
               ))}
-            </div>
-          )}
+          </div>
         </div>
       </section>
     </Layout>
