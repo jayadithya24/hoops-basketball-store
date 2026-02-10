@@ -1,3 +1,7 @@
+import AdminRoute from "@/components/AdminRoute";
+import AdminDashboard from "@/pages/admin/AdminDashboard";
+import AdminProducts from "@/pages/admin/AdminProducts";
+
 import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -17,7 +21,6 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 // Auth Pages
@@ -33,7 +36,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 
-// NEW — Thank You Page
+// Thank You Page
 import ThankYou from "./pages/ThankYou";
 
 const queryClient = new QueryClient();
@@ -55,21 +58,19 @@ const App = () => {
 
             <BrowserRouter>
               <Routes>
-
-                {/* MAIN ROUTES */}
+                {/* PUBLIC ROUTES */}
                 <Route path="/" element={<Index />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/admin" element={<Admin />} />
 
                 {/* AUTH ROUTES */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
 
-                {/* PROTECTED ROUTES */}
+                {/* USER PROTECTED ROUTES */}
                 <Route
                   path="/cart"
                   element={
@@ -88,10 +89,29 @@ const App = () => {
                   }
                 />
 
-                {/* THANK YOU PAGE */}
+                {/* ADMIN ROUTES */}
+                <Route
+                  path="/admin"
+                  element={
+                    <AdminRoute>
+                      <AdminDashboard />
+                    </AdminRoute>
+                  }
+                />
+
+                <Route
+                  path="/admin/products"
+                  element={
+                    <AdminRoute>
+                      <AdminProducts />
+                    </AdminRoute>
+                  }
+                />
+
+                {/* THANK YOU */}
                 <Route path="/thankyou" element={<ThankYou />} />
 
-                {/* LEGAL PAGES */}
+                {/* LEGAL */}
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
 

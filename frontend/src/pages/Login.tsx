@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { API_URL } from "../config/api";
 
+const ADMIN_EMAIL = "admin@hoops.com";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,9 +15,9 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // -------------------------
-  // LOGIN FUNCTION (FINAL)
-  // -------------------------
+  // ===============================
+  // LOGIN FUNCTION
+  // ===============================
   const handleLogin = async () => {
     if (!email || !password) {
       toast.error("Please enter email and password");
@@ -27,35 +28,40 @@ const Login = () => {
 
     try {
       const res = await axios.post(`${API_URL}/auth/login`, {
-
         email,
         password,
       });
-
-      console.log("LOGIN RESPONSE:", res.data); // Debug token output
 
       const token = res.data?.token;
 
       if (!token) {
         toast.error("Login failed — no token received");
-        setLoading(false);
         return;
       }
 
-      // Store token in localStorage + Context
+      // ✅ Save token in AuthContext + localStorage
       login(token);
+
+      // ✅ Save email for admin check
+      localStorage.setItem("email", email);
 
       toast.success("Login successful!");
 
-      // Navigate AFTER token is saved
-      setTimeout(() => navigate("/"), 300);
+      // ✅ OPTIONAL: role-based redirect
+      setTimeout(() => {
+        if (email === ADMIN_EMAIL) {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }, 300);
 
     } catch (error: any) {
-      console.log("LOGIN ERROR:", error?.response?.data);
+      console.error("LOGIN ERROR:", error?.response?.data);
       toast.error(error?.response?.data?.error || "Invalid login details");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -71,41 +77,42 @@ const Login = () => {
           Login
         </h1>
 
-        {/* Inputs */}
-        <div className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            className="
-              w-full px-4 py-3 rounded-xl 
-              bg-muted/40 border border-border/40 
-              focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/40
-              text-white placeholder-muted-foreground
-            "
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        {/* Email */}
+        <input
+          type="email"
+          placeholder="Email"
+          className="
+            w-full px-4 py-3 rounded-xl mb-4
+            bg-muted/40 border border-border/40 
+            focus:outline-none focus:border-primary 
+            focus:ring-2 focus:ring-primary/40
+            text-white placeholder-muted-foreground
+          "
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="
-              w-full px-4 py-3 rounded-xl 
-              bg-muted/40 border border-border/40 
-              focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/40
-              text-white placeholder-muted-foreground
-            "
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+        {/* Password */}
+        <input
+          type="password"
+          placeholder="Password"
+          className="
+            w-full px-4 py-3 rounded-xl mb-6
+            bg-muted/40 border border-border/40 
+            focus:outline-none focus:border-primary 
+            focus:ring-2 focus:ring-primary/40
+            text-white placeholder-muted-foreground
+          "
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         {/* Login Button */}
         <button
           onClick={handleLogin}
           disabled={loading}
           className="
-            btn-primary w-full mt-6 py-3 rounded-xl font-semibold 
+            btn-primary w-full py-3 rounded-xl font-semibold 
             disabled:opacity-60 disabled:cursor-not-allowed
           "
         >
